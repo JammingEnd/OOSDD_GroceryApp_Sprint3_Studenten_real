@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Alerts;
+﻿    using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Grocery.App.Views;
@@ -15,7 +15,10 @@ namespace Grocery.App.ViewModels
         private readonly IGroceryListItemsService _groceryListItemsService;
         private readonly IProductService _productService;
         private readonly IFileSaverService _fileSaverService;
-        
+
+        [ObservableProperty]
+        string productSearchString = string.Empty;
+        public List<Product> SearchBarResults { get; set; } = [];
         public ObservableCollection<GroceryListItem> MyGroceryListItems { get; set; } = [];
         public ObservableCollection<Product> AvailableProducts { get; set; } = [];
 
@@ -45,6 +48,16 @@ namespace Grocery.App.ViewModels
             foreach (Product p in _productService.GetAll())
                 if (MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null  && p.Stock > 0)
                     AvailableProducts.Add(p);
+        }
+
+        private List<Product> GetAvaibleProductReturn()
+        {
+            List<Product> AvailableProducts = new();
+            foreach (Product p in _productService.GetAll())
+                if (MyGroceryListItems.FirstOrDefault(g => g.ProductId == p.Id) == null && p.Stock > 0)
+                    AvailableProducts.Add(p);
+
+            return AvailableProducts;
         }
 
         partial void OnGroceryListChanged(GroceryList value)
@@ -86,5 +99,36 @@ namespace Grocery.App.ViewModels
             }
         }
 
+        public void FilterProducts(List<Product> items)
+        {
+            AvailableProducts.Clear();
+
+            foreach (var item in items)
+            {
+                if (item.Stock > 0)
+                    AvailableProducts.Add(item);
+            }
+        }
+
+        partial void OnProductSearchStringChanged(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                AvailableProducts.Clear();
+                foreach (var item in GetAvaibleProductReturn())
+                {
+                    AvailableProducts.Add(item);
+                }
+            }
+            else
+            {
+                var lower = value.ToLower();
+                List<Product> filtered = _productService.GetAll().Where(p => p.Name.ToLower().Contains(lower)).ToList();
+
+                SearchBarResults = new List<Product>(filtered);
+
+                FilterProducts(SearchBarResults);
+            }
+        }
     }
 }

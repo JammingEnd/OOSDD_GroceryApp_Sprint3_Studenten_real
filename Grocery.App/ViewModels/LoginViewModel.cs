@@ -1,8 +1,12 @@
 ﻿
+using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Grocery.App.Views;
 using Grocery.Core.Interfaces.Services;
 using Grocery.Core.Models;
+using Grocery.Core.Services;
+using System.Threading.Tasks;
 
 namespace Grocery.App.ViewModels
 {
@@ -27,19 +31,38 @@ namespace Grocery.App.ViewModels
         }
 
         [RelayCommand]
-        private void Login()
+        private async Task Login()
         {
             Client? authenticatedClient = _authService.Login(Email, Password);
             if (authenticatedClient != null)
             {
                 LoginMessage = $"Welkom {authenticatedClient.Name}!";
                 _global.Client = authenticatedClient;
-                Application.Current.MainPage = new AppShell();
+
+            
+                bool isHuman = await ShowCaptchaAsync();
+
+
+                if (isHuman)
+                    Application.Current.MainPage = new AppShell();
+
+
             }
             else
             {
                 LoginMessage = "Ongeldige inloggegevens.";
             }
         }
+        public async Task<bool> ShowCaptchaAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            var captchaVm = new CaptchaViewModel();
+            var captchaView = new CaptchaView(captchaVm, tcs);
+            await Application.Current.MainPage.ShowPopupAsync(captchaView);
+            captchaView.Close();
+            return await tcs.Task;
+        }
     }
+
+
 }

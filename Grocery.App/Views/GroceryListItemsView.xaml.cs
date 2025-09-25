@@ -9,4 +9,9 @@ public partial class GroceryListItemsView : ContentPage
 		InitializeComponent();
         BindingContext = viewModel;
     }
+
+    private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+    {
+
+    }
 }
