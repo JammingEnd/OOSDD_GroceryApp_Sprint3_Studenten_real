@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:m="clr-namespace:Grocery.Core.Models;assembly=Grocery.Core"
+                xmlns:vm="clr-namespace:Grocery.App.ViewModels"
+                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                x:Class="Grocery.App.Views.CaptchaView"
+                x:DataType="vm:CaptchaViewModel">
+
+    <VerticalStackLayout Padding="20" BackgroundColor="White" WidthRequest="300" HeightRequest="600">
+
+        <Label Text="{Binding TimeLeftString}" FontSize="16" TextColor="Red" Padding="12"/>
+
+        <Label Text="Verify You Are Human" FontSize="18"
+               HorizontalOptions="Center" />
+
+        <!-- Captcha box -->
+        <Grid HeightRequest="250" BackgroundColor="#F5F5F5" Padding="10">
+
+            <!-- Center lines -->
+            <BoxView Color="Gray" WidthRequest="1" HorizontalOptions="Center" VerticalOptions="Fill"/>
+            <BoxView Color="Gray" HeightRequest="1" VerticalOptions="Center" HorizontalOptions="Fill"/>
+
+            <!-- Movable Shape -->
+            <Grid WidthRequest="40"
+            HeightRequest="40"
+            BackgroundColor="DodgerBlue"
+            TranslationX="{Binding ShapeX}"
+             TranslationY="{Binding ShapeY}">
+              <Label Text="+" FontSize="24" TextColor="White"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Center"/>
+            </Grid>
+        </Grid>
+
+        <!-- Arrow controls -->
+        <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto"
+            HorizontalOptions="Center" ColumnSpacing="10" RowSpacing="10">
+
+            <Button Grid.Row="0" Grid.Column="1" Text="↑" Command="{Binding MoveUpCommand}"/>
+            <Button Grid.Row="1" Grid.Column="0" Text="←" Command="{Binding MoveLeftCommand}"/>
+            <Button Grid.Row="1" Grid.Column="2" Text="→" Command="{Binding MoveRightCommand}"/>
+            <Button Grid.Row="2" Grid.Column="1" Text="↓" Command="{Binding MoveDownCommand}"/>
+        </Grid>
+
+        <!-- Verify button -->
+        <Button Text="Verify" Command="{Binding VerifyCommand}" WidthRequest="200"/>
+    </VerticalStackLayout>
+</toolkit:Popup>
